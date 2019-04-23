@@ -232,7 +232,9 @@ def main(args):
         cookie_jar.save(options.cookie)
 
     if endseq is None:
-        return 3
+        # No data was downloaded (or an error)
+        log.debug("No new diffs after %d. Everything up-to-date." % startseq)
+        return 0
 
     write_end_sequence(options.seq_file, endseq)
 

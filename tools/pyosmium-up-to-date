@@ -85,11 +85,17 @@ def update_from_custom_server(url, seq, ts, options):
     else:
         log.debug("Using given sequence ID %d" % seq)
         startseq = seq + 1
-        ts = svr.get_state_info(seq=startseq)
-        if ts is None:
-            log.error("Cannot download state information for ID %d. Is the URL correct?" % seq)
-            return 3
-        ts = ts.timestamp
+        server_latest_sequence = svr.get_state_info().sequence
+
+        if seq == server_latest_sequence:
+            log.info("File is up-to-date at sequence %d" % seq)
+            return 0
+        else:
+            ts = svr.get_state_info(seq=startseq)
+            if ts is None:
+                log.error("Cannot download state information for ID %d. Is the URL correct?" % seq)
+                return 3
+            ts = ts.timestamp
 
     if not options.force_update:
         cmpdate = dt.datetime.utcnow() - dt.timedelta(days=90)
